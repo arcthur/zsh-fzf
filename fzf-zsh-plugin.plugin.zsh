@@ -31,25 +31,6 @@ function _fzf_debugOut() {
   fi
 }
 
-# Install fzf, and enable it for command line history searching and
-# file searching.
-
-# Determine where fzf is installed
-local fzf_conf
-if [[ -z "$FZF_PATH" ]]; then
-  FZF_PATH=~/.fzf
-  fzf_conf=~/.fzf.zsh
-else
-  fzf_conf="$FZF_PATH/fzf.zsh"
-fi
-unset xdg_path
-
-# Install fzf into ~ if it hasn't already been installed.
-if [[ ! -d $FZF_PATH ]]; then
-  git clone --depth 1 https://github.com/junegunn/fzf.git $FZF_PATH
-  $FZF_PATH/install --bin
-fi
-
 # Install some default settings if user doesn't already have fzf
 # settings configured.
 if [[ ! -f $fzf_conf ]]; then
@@ -75,25 +56,20 @@ fi
 
 if [[ -z "$FZF_DEFAULT_OPTS" ]]; then
   fzf_default_opts+=(
+    "--ansi"
     "--layout=reverse"
     "--info=inline"
     "--height=80%"
-    "--preview='ls -al'"
+    "--cycle"
     "--color='hl:148,hl+:154,pointer:032,marker:010,bg+:237,gutter:008'"
     "--prompt='∼ '"
     "--pointer='▶'"
     "--marker='✓'"
+    "--bind=tab:accept"
     "--bind '?:toggle-preview'"
-    "--bind 'ctrl-a:select-all'"
-    "--bind 'ctrl-e:execute(vim {+} >/dev/tty)'"
-    "--bind 'ctrl-v:execute(code {+})'"
     "--bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'"
   )
   export FZF_DEFAULT_OPTS=$(printf '%s\n' "${fzf_default_opts[@]}")
-fi
-
-if [[ -d $FZF_PATH/man ]]; then
-    manpath+=("$MANPATH:$FZF_PATH/man")
 fi
 
 # Cleanup internal functions
